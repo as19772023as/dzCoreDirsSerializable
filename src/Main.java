@@ -1,4 +1,7 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -9,15 +12,18 @@ public class Main {
     public static final String FILE_NAME1 = "save1.dat";
     public static final String FILE_NAME2 = "save2.dat";
     public static final String FILE_NAME3 = "save3.dat";
-    public static final String DIR_NAME = "C://Games//savegames//";
+    public static final String DIR_NAME = "C://Games//savegames//GunRunner//";
     public static final String NEW_DIR_NAME = "C://Games//res//";
-    public static final String ZIP_NAME = "C://Games//savegames//zip.zip";
+    public static final String ZIP_NAME = "C://Games//savegames//GunRunner//zip.zip";
 
 
     public static void main(String[] args) {
         GameProgress gameProgress1 = new GameProgress(10, 20, 3, 3.5);
         GameProgress gameProgress2 = new GameProgress(34, 24, 8, 8.5);
         GameProgress gameProgress3 = new GameProgress(110, 50, 1, 2.9);
+
+        File dirGunRunner = new File("C://Games//savegames", "GunRunner");
+        dirGunRunner.mkdir();
 
         String saveAdress1 = DIR_NAME + FILE_NAME1;
         String saveAdress2 = DIR_NAME + FILE_NAME2;
@@ -32,10 +38,26 @@ public class Main {
         saveGame(saveAdress2, gameProgress2);
         saveGame(saveAdress3, gameProgress3);
 
-        // zipFiles(ZIP_NAME, listFiles);   //создание ZIP- архива в папке - "savegames"
-        //openZip(ZIP_NAME, NEW_DIR_NAME);  // распаковка в другой папке - "res"
-        //System.out.println(openProgress(NEW_DIR_NAME + FILE_NAME2));
+        zipFiles(ZIP_NAME, listFiles);   //создание ZIP- архива в папке - "savegames"
+
+        fileDelete(listFiles.get(0));
+        fileDelete(listFiles.get(1));
+        fileDelete(listFiles.get(2));
+
+        openZip(ZIP_NAME, NEW_DIR_NAME);  // распаковка в другой папке - "res"
+        System.out.println(openProgress(NEW_DIR_NAME + FILE_NAME2));
     }
+
+
+    public static void fileDelete(String fail) {
+        Path path = Paths.get(fail);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void saveGame(String failName, GameProgress gameProgress) {
         try (FileOutputStream fos = new FileOutputStream(failName);
@@ -67,7 +89,9 @@ public class Main {
         } catch (IOException ex) {
             System.out.println("4 " + ex.getMessage());
         }
+
     }
+
 
     public static void openZip(String zipFail, String dirName) {
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFail))) {
@@ -86,6 +110,7 @@ public class Main {
             System.out.println("5 " + e.getMessage());
         }
     }
+
 
     public static GameProgress openProgress(String fail) {
         GameProgress gameProgressSave = null;
